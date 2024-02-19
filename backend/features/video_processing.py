@@ -1,11 +1,14 @@
 from spleeter.separator import Separator
-import os
+from multiprocessing import freeze_support
 
-# Initialize separator
-separator = Separator('spleeter:2stems')  # '2stems' separates into vocals and accompaniment (music)
+if __name__ == '__main__':
+    # Call freeze_support() to ensure correct multiprocessing behavior
+    freeze_support()
 
-# Provide path to your audio file
-audio_file_path = 'audio_example_mono.mp3'
+    # Initialize separator
+    separator = Separator('spleeter:2stems')  # '2stems' separates into vocals and accompaniment (music)
 
-# Separate the audio
-separator.separate_to_file(audio_file_path, 'output_folder')
+    # Provide path to your audio file
+    audio_file_path = r'E:\Integration_2024\backend\static\uploads\tested.wav'
+    # Separate the audio
+    separator.separate_to_file(audio_file_path, r'E:\Integration_2024\output\audio')
