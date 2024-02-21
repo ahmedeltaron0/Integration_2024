@@ -34,9 +34,9 @@ def convert_video_to_audio_and_split(local_video_path):
         print(f"An error occurred during separation: {e}")
 
 # Example usage
-def main():
+#def main():
     local_video_path = input("Enter the path to the video file: ")
     convert_video_to_audio_and_split(local_video_path)
-if __name__ == "__main__":
+#if __name__ == "__main__":
     freeze_support()  # Step 2: Call freeze_support()
     main()
