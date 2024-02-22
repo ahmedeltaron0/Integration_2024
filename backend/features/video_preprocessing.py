@@ -21,9 +21,10 @@ def convert_video_to_audio_and_split(local_video_path):
         video.close()
         audio.close()
         print("Video was successfully converted to audio")
+        return output_audio_path  # Return the output audio path
     except Exception as e:
         print(f"An error occurred during conversion: {e}")
-        return
+        return None
     # Initialize separator
     separator = Separator('spleeter:2stems')  # '2stems' separates into vocals and accompaniment (music)
     try:
