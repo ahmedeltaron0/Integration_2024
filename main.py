@@ -2,9 +2,9 @@ from backend.features.video_preprocessing import convert_video_to_audio_and_spli
 from backend.features.trans import transcribe_audio, translate_text
 
 def main():
+        # Step 1: convert audio 
     converted = input("Enter the path to the video file: ")
     audio_path = convert_video_to_audio_and_split(converted)
-    
     if audio_path:
         # Step 2: Transcribe audio
         transcription = transcribe_audio(audio_path)

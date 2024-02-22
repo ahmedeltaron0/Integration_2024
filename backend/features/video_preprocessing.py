@@ -25,19 +25,3 @@ def convert_video_to_audio_and_split(local_video_path):
     except Exception as e:
         print(f"An error occurred during conversion: {e}")
         return None
-    # Initialize separator
-    separator = Separator('spleeter:2stems')  # '2stems' separates into vocals and accompaniment (music)
-    try:
-        # Separate the audio
-        separator.separate_to_file(output_audio_path, r'E:\Integration_2024\output\audio')
-        print("Audio was successfully separated")
-    except Exception as e:
-        print(f"An error occurred during separation: {e}")
-
-# Example usage
-#def main():
-    local_video_path = input("Enter the path to the video file: ")
-    convert_video_to_audio_and_split(local_video_path)
-#if __name__ == "__main__":
-    freeze_support()  # Step 2: Call freeze_support()
-    main()

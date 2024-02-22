@@ -34,19 +34,3 @@ def translate_text(transcription, target_language="ar"):
     translated_text = " ".join(translated_chunks)
     return translated_text
 
-#if __name__ == "__main__":
-    audio_path = r"E:\Integration_2024\output\audio\tested\vocals.wav"
-    transcription = transcribe_audio(audio_path)
-    transcription_output_path = r"E:\Integration_2024\output\text\text_transcription_output.txt"
-    with open(transcription_output_path, "w", encoding="utf-8") as output_file:
-        output_file.write(transcription)
-
-    with open(transcription_output_path, "r", encoding="utf-8") as input_file:
-        transcription_result = input_file.read()
-
-    translated_result = translate_text(transcription_result)
-    translation_output_path = r"E:\Integration_2024\output\text\text_translation_output.txt"
-    with open(translation_output_path, "w", encoding="utf-8") as output_file:
-        output_file.write(translated_result)
-
-    print("Translation complete. Translated text saved to:", translation_output_path)
