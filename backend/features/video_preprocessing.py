@@ -5,7 +5,7 @@ from multiprocessing import freeze_support  # Step 1: Import freeze_support()
 
 def convert_video_to_audio_and_split(local_video_path):
     # Ensure the output directory exists
-    output_directory = r'E:\Integration_2024\backend\static\uploads'
+    output_directory = r'E:\Integration_2024\uploads'
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     # Construct the output audio file path

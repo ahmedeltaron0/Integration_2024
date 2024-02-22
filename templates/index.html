@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files</title>
+</head>
+<body>
+    <h1>Upload Video and Audio Files</h1>
+    <form action="/process_video" method="post" enctype="multipart/form-data">
+        <label for="video_file">Upload Video File:</label>
+        <input type="file" id="video_file" name="video_file"><br><br>
+
+        <label for="audio_file">Upload Audio File:</label>
+        <input type="file" id="audio_file" name="audio_file"><br><br>
+
+        <input type="submit" value="Upload and Process">
+    </form>
+
+    {% if processing_complete %}
+    <br><br>
+    <a href="/download_transcription">Download Transcription</a><br>
+    <a href="/download_translation">Download Translation</a><br>
+    <a href="/download_speech">Download Speech</a>
+    {% endif %}
+</body>
+</html>
