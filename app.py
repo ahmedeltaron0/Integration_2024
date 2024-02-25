@@ -11,7 +11,12 @@ OUTPUT_FOLDER = 'output'
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), UPLOAD_FOLDER)
 app.config['OUTPUT_FOLDER'] = os.path.join(os.getcwd(), OUTPUT_FOLDER, 'text')
 
-def process_video(video_file_path, audio_file_path):
+languages = {"English": 'en', "Spanish": 'es', "French": 'fr', "German": 'de', "Italian": 'it',
+             "Portuguese": 'pt', "Polish": 'pl', "Turkish": 'tr', "Russian": "ru", "Dutch": "nl",
+             "Czech": "cs", "Arabic": 'ar', "Chinese": 'cn', "Japanese": "ja", "Hungarian": 'hu',
+             "Korean": 'ko', "Hindi": 'hi'}
+
+def process_video(video_file_path, audio_file_path, target_language):
     audio_path = convert_video_to_audio_and_split(video_file_path)
     if audio_path:
         # Transcribe audio
@@ -21,7 +26,7 @@ def process_video(video_file_path, audio_file_path):
             output_file.write(transcription)
         
         # Translate transcription
-        translated_result = translate_text(transcription)
+        translated_result = translate_text(transcription, target_language)
         translation_output_path = os.path.join(app.config['OUTPUT_FOLDER'], 'text_translation_output.txt')
         with open(translation_output_path, "w", encoding="utf-8") as output_file:
             output_file.write(translated_result)
@@ -29,8 +34,7 @@ def process_video(video_file_path, audio_file_path):
         # Generate speech
         output_audio_path = os.path.join(os.getcwd(), OUTPUT_FOLDER, 'audio', 'tested', 'cloning.wav')
         speaker_wav = audio_file_path
-        language = "ar"
-        generate_speech(translation_output_path, output_audio_path, speaker_wav, language)
+        generate_speech(translation_output_path, output_audio_path, speaker_wav, target_language)
 
         return transcription_output_path, translation_output_path, output_audio_path
     else:
@@ -38,7 +42,7 @@ def process_video(video_file_path, audio_file_path):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', languages=languages)
 
 @app.route('/process_video', methods=['POST'])
 def upload_file():
@@ -47,6 +51,7 @@ def upload_file():
 
     video_file = request.files['video_file']
     audio_file = request.files['audio_file']
+    target_language = request.form['target_language']
     
     if video_file.filename == '' or audio_file.filename == '':
         return 'No selected file'
@@ -57,7 +62,7 @@ def upload_file():
         video_file.save(video_file_path)
         audio_file.save(audio_file_path)
 
-        transcription_output_path, translation_output_path, output_audio_path = process_video(video_file_path, audio_file_path)
+        transcription_output_path, translation_output_path, output_audio_path = process_video(video_file_path, audio_file_path, target_language)
         if transcription_output_path and translation_output_path and output_audio_path:
             return f'Processing complete. Transcribed text saved to: {transcription_output_path}<br>Translated text saved to: {translation_output_path}<br>Speech generated and saved to: {output_audio_path}'
         else:
