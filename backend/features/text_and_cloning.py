@@ -2,8 +2,8 @@ from TTS.api import TTS
 import torch
 
 def generate_speech(file_path, output_file_path, speaker_wav, language):
-    # Read text from file
-    with open(file_path, "r", encoding="utf-8") as file:
+    # Read text from file with explicit encoding
+    with open(file_path, "r", encoding="latin-1") as file:
         text = file.read()
 
     # Initialize TTS with GPU support
@@ -15,6 +15,7 @@ def generate_speech(file_path, output_file_path, speaker_wav, language):
                     file_path=output_file_path,
                     speaker_wav=speaker_wav,
                     language=language)
+
 
 def main():
     text_file_path = r"E:\Integration_2024\output\text\text_translation_output.txt"

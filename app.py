@@ -3,6 +3,7 @@ from backend.features.video_preprocessing import convert_video_to_audio_and_spli
 from backend.features.trans import transcribe_audio, translate_text
 from backend.features.text_and_cloning import generate_speech
 import os
+import tempfile
 
 app = Flask(__name__)
 
@@ -67,6 +68,42 @@ def upload_file():
             return f'Processing complete. Transcribed text saved to: {transcription_output_path}<br>Translated text saved to: {translation_output_path}<br>Speech generated and saved to: {output_audio_path}'
         else:
             return 'Failed to process video.'
+
+
+
+from backend.features.trans import translate_text
+
+@app.route('/generate_speech', methods=['POST'])
+def generate_text_to_speech():
+    text_input = request.form['text_input']
+    output_file_path = request.form['output_file_path']
+    speaker_wav = request.files['audio_file']
+    target_language = request.form['target_language']
+    
+    if not text_input:
+        return 'No text input provided'
+    
+    if not output_file_path or not speaker_wav or not target_language:
+        return 'Missing parameters for generating speech'
+
+    try:
+        # Translate text to target language
+        translated_text = translate_text(text_input, target_language)
+        
+        # Save translated text to a temporary file
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
+            tmp_file.write(translated_text)
+            tmp_file_path = tmp_file.name
+
+        # Generate speech
+        generate_speech(tmp_file_path, output_file_path, speaker_wav, target_language)
+        
+        # Delete temporary file
+        os.remove(tmp_file_path)
+
+        return 'Speech generated successfully'
+    except Exception as e:
+        return f'Error generating speech: {str(e)}'
 
 if __name__ == '__main__':
     app.run(debug=True)

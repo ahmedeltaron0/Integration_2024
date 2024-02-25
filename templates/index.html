@@ -3,25 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIDEO Processing</title>
+    <title>File Upload and Processing</title>
 </head>
 <body>
-    <h1>VIDEO Processing</h1>
+    <h1>File Upload and Processing</h1>
     <form action="/process_video" method="post" enctype="multipart/form-data">
-        <label for="video_file" style="font-size: x-large;">Choose a video file to transcribbe :</label><br>
-        <input type="file" name="video_file" id="video_file" accept="video/*, audio/*"><br><br>
+        <label for="video_file">Choose a video file:</label><br>
+        <input type="file" name="video_file" id="video_file" accept="video/*"><br><br>
         
-        <label for="audio_file" style="font-size: x-large;">Choose an audio file to cloning :</label><br>
+        <label for="audio_file">Choose an audio file:</label><br>
         <input type="file" name="audio_file" id="audio_file" accept="audio/*"><br><br>
         
-        <label for="target_language" style="font-size: x-large;">Target Language:</label>
+        <label for="target_language">Target Language:</label>
         <select id="target_language" name="target_language">
             {% for lang, code in languages.items() %}
                 <option value="{{ code }}">{{ lang }}</option>
             {% endfor %}
         </select><br><br>
-        <button type="submit" style="font-size: x-large;">Process Files</button>
+        <button type="submit">Process Files</button>
     </form>
-
+    
+    <h2>Text to Speech</h2>
+    <form action="/generate_speech" method="post" enctype="multipart/form-data">
+        <textarea name="text_input" rows="4" cols="50" placeholder="Enter text..."></textarea><br><br>
+        <input type="hidden" name="output_file_path" value="E:\Integration_2024\output\audio\tested\cloning_from_text.wav">
+        
+        <label for="audio_file">Choose an audio file:</label><br>
+        <input type="file" name="audio_file" id="audio_file" accept="audio/*"><br><br>
+        
+        <label for="target_language">Target Language:</label>
+        <select id="target_language" name="target_language">
+            {% for lang, code in languages.items() %}
+                <option value="{{ code }}">{{ lang }}</option>
+            {% endfor %}
+        </select><br><br>
+        <button type="submit">Generate Speech</button>
+    </form>
 </body>
 </html>
