@@ -13,9 +13,9 @@ app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), UPLOAD_FOLDER)
 app.config['OUTPUT_FOLDER'] = os.path.join(os.getcwd(), OUTPUT_FOLDER, 'text')
 
 languages = {"English": 'en', "Spanish": 'es', "French": 'fr', "German": 'de', "Italian": 'it',
-             "Portuguese": 'pt', "Polish": 'pl', "Turkish": 'tr', "Russian": "ru", "Dutch": "nl",
-             "Czech": "cs", "Arabic": 'ar', "Chinese": 'cn', "Japanese": "ja", "Hungarian": 'hu',
-             "Korean": 'ko', "Hindi": 'hi'}
+            "Portuguese": 'pt', "Polish": 'pl', "Turkish": 'tr', "Russian": "ru", "Dutch": "nl",
+            "Czech": "cs", "Arabic": 'ar', "Chinese": 'cn', "Japanese": "ja", "Hungarian": 'hu',
+            "Korean": 'ko', "Hindi": 'hi'}
 
 def process_video(video_file_path, audio_file_path, target_language):
     audio_path = convert_video_to_audio_and_split(video_file_path)
@@ -71,7 +71,6 @@ def upload_file():
 
 
 
-from backend.features.trans import translate_text
 
 @app.route('/generate_speech', methods=['POST'])
 def generate_text_to_speech():
@@ -91,8 +90,8 @@ def generate_text_to_speech():
         translated_text = translate_text(text_input, target_language)
         
         # Save translated text to a temporary file
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as tmp_file:
-            tmp_file.write(translated_text)
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as tmp_file:
+            tmp_file.write(text_input)
             tmp_file_path = tmp_file.name
 
         # Generate speech
