@@ -1,5 +1,5 @@
-from backend.features.video_preprocessing import convert_video_to_audio_and_split
-from backend.features.trans import transcribe_audio, translate_text
+from features.video_preprocessing import convert_video_to_audio_and_split
+from features.trans import transcribe_audio, translate_text
 from backend.features.text_and_cloning import generate_speech
 import os
 
