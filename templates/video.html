@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        select {
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .file-list {
+            margin-top: 20px;
+        }
+        .file-list label {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Processing</h1>
+        <form action="/video" method="post" enctype="multipart/form-data">
+            <label for="video">Upload Video:</label>
+            <input type="file" id="video" name="video" accept="video/*" required><br>
+
+            <label for="language">Select Target Language:</label>
+            <select id="language" name="target_language" required>
+            {% for lang, code in language_mapping.items() %}
+            <option value="{{ code }}">{{ lang.capitalize() }}</option>
+            {% endfor %}
+            </select>
+
+
+            <label for="audio">Upload Audio for Voice Cloning:</label>
+            <input type="file" id="audio" name="audio" accept="audio/*" required><br>
+
+            <input type="submit" value="Process">
+        </form>
+        
+        <div class="file-list">
+            <h2>Uploaded Files:</h2>
+            <label for="uploaded-video">Uploaded Video:</label>
+            <span id="uploaded-video"></span><br>
+            <label for="uploaded-audio">Uploaded Audio:</label>
+            <span id="uploaded-audio"></span><br>
+            <label for="output-audio">Output Audio:</label>
+            <span id="output-audio"></span>
+        </div>
+    </div>
+
+    <script>
+        // Update file names in the file list
+        document.getElementById('video').addEventListener('change', function() {
+            document.getElementById('uploaded-video').textContent = this.files[0].name;
+        });
+        document.getElementById('audio').addEventListener('change', function() {
+            document.getElementById('uploaded-audio').textContent = this.files[0].name;
+        });
+    </script>
+</body>
+</html>

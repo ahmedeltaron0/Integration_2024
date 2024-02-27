@@ -3,34 +3,40 @@ from moviepy.editor import *
 from faster_whisper import WhisperModel
 import re
 from deep_translator import GoogleTranslator
-from pydub import AudioSegment
-import time
 from TTS.api import TTS
 import torch
 from features.tts_chunks import split_text, check_lang
+import time
+from pydub import AudioSegment
 
 # for laptop --> from multiprocessing import freeze_support  # Step 1: Import freeze_support()
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 
-def convert_audio_to_wav(local_audio_path):
+def convert_video_to_audio_and_split(local_video_path):
     # Ensure the output directory exists
     output_directory = r'E:\Integration_2024\uploads'
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
     # Construct the output audio file path
-    output_audio_path = os.path.join(output_directory, os.path.splitext(os.path.basename(local_audio_path))[0] + '.wav')
+    output_audio_path = os.path.join(output_directory, os.path.splitext(os.path.basename(local_video_path))[0] + '.wav')
     try:
-        # Load the audio file
-        audio = AudioSegment.from_file(local_audio_path)
-        # Export audio to a WAV file
-        audio.export(output_audio_path, format="wav")
-        print("Audio was successfully converted to WAV")
+        # Load the video file
+        video = VideoFileClip(local_video_path)
+        # Extract audio from the video
+        audio = video.audio
+        # Write the audio to a WAV file
+        audio.write_audiofile(output_audio_path)
+        # Close the video and audio objects to free resources
+        video.close()
+        audio.close()
+        print("Video was successfully converted to audio")
         return output_audio_path  # Return the output audio path
     except Exception as e:
         print(f"An error occurred during conversion: {e}")
         return None
+    
 def transcribe_audio(audio_path):
     model = WhisperModel("large-v3", compute_type="float16")
     segments, _ = model.transcribe(audio_path)
@@ -38,22 +44,50 @@ def transcribe_audio(audio_path):
     for segment in segments:
         transcriptions += segment.text + " "
     return transcriptions.strip()
-def translate_text(text, target_language="ar"):
+
+def translate_text(transcription, target_language="ar", language_mapping=None):
+    if language_mapping is None:
+        language_mapping = {
+            "english": 'en',
+            "spanish": 'es',
+            "french": 'fr', 
+            "german": 'de',
+            "italian": 'it',
+            "portuguese": 'pt',
+            "polish": 'pl',
+            "turkish": 'tr',
+            "russian": "ru",
+            "dutch": "nl",
+            "czech": "cs",
+            "arabic": 'ar',
+            "chinese": 'zh',
+            "japanese": "ja",
+            "hungarian": 'hu',
+            "korean": 'ko',
+            "hindi": 'hi'
+        }
+    
     max_chunk_length = 500
-    words = re.findall(r'\b\w+\b', text)
+    words = re.findall(r'\b\w+\b', transcription)
     translated_chunks = []
     current_chunk = ""
+    
+    # Map the target language name to its corresponding code if available
+    target_language_code = language_mapping.get(target_language.lower(), target_language)
+    
     for word in words:
         if len(current_chunk) + len(word) <= max_chunk_length:
             current_chunk += word + " "
         else:
-            translated_chunk = GoogleTranslator(source='auto', target=target_language).translate(current_chunk.strip())
+            translated_chunk = GoogleTranslator(source='auto', target=target_language_code).translate(current_chunk.strip())
             translated_chunks.append(translated_chunk)
             current_chunk = word + " "
+    
     # Translate the last chunk
     if current_chunk:
-        translated_chunk = GoogleTranslator(source='auto', target=target_language).translate(current_chunk.strip())
+        translated_chunk = GoogleTranslator(source='auto', target=target_language_code).translate(current_chunk.strip())
         translated_chunks.append(translated_chunk)
+    
     translated_text = " ".join(translated_chunks)
     return translated_text
 
@@ -94,46 +128,54 @@ def generate_speech(input_lang, input_text, input_audio):
 
 
 
-#------> TESTING <------
-def test_audio_processing():
-    # Step 0: Input audio file path
-    audio_path = input("Enter the path of the audio file: ")
+# ------> TESTING <------
 
-    # Step 1: Convert audio to WAV
-    wav_audio_path = convert_audio_to_wav(audio_path)
-    if not wav_audio_path:
+
+# Assuming the necessary function definitions are available
+
+# Define the test function
+def test_processing_pipeline():
+    # Step 0: Input video file path
+    video_path = input("Enter the path of the video file: ")
+
+    # Step 1: Convert video to audio
+    audio_path = convert_video_to_audio_and_split(video_path)
+    if audio_path:
+        print("Audio file created successfully:", audio_path)
+    else:
         print("Error occurred during audio conversion.")
         return
 
     # Step 2: Transcribe audio to text
-    transcribed_text = transcribe_audio(wav_audio_path)
-    if not transcribed_text:
+    transcribed_text = transcribe_audio(audio_path)
+    if transcribed_text:
+        print("Transcription successful:", transcribed_text)
+    else:
         print("Error occurred during transcription.")
         return
-    print("Transcribed text:", transcribed_text)
 
     # Step 3: Input target language
     target_language = input("Enter the target language (e.g., 'ar' for Arabic): ")
 
     # Step 4: Translate the transcribed text
     translated_text = translate_text(transcribed_text, target_language)
-    if not translated_text:
+    if translated_text:
+        print("Translation successful:", translated_text)
+    else:
         print("Error occurred during translation.")
         return
-
-    print("Translated text:", translated_text)
-
-    input_lang = input("Enter the target language (e.g., 'ar' for Arabic): ")
-
-
-    # Step 5: Generate speech
-    output_audio_path = generate_speech(input_lang , translated_text, wav_audio_path)
-    if not output_audio_path:
+    
+    # Step 5: Prompt user for clone audio file path
+    clone_audio_path = input("Enter the path to the clone audio file: ")
+    
+    # Step 6: Generate speech
+    output_audio_path = generate_speech(target_language, translated_text, clone_audio_path)
+    if output_audio_path:
+        print("Speech generated successfully and saved to:", output_audio_path)
+    else:
         print("Error occurred during speech generation.")
         return
 
-    print("Speech generated successfully and saved to:", output_audio_path)
-
 # Call the test function
 if __name__ == "__main__":
-    test_audio_processing()
+    test_processing_pipeline()

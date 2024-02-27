@@ -34,11 +34,11 @@ language={
             "korean" :'ko',
             "hindi": 'hi'
         }
-
 def check_lang(input_lang):
     lang = None  # Default value
-    for key, value in language.items():
-        if input_lang.lower() == key:
-            lang = value
-            break
+    if input_lang is not None:
+        for key, value in language.items():
+            if input_lang.lower() == key:
+                lang = value
+                break
     return lang
