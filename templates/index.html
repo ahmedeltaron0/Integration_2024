@@ -3,93 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload and Processing</title>
+    <title>Main Page</title>
     <style>
-        #uploaded_video {
-            width: 250px; /* Set the width */
-            height: 250px; /* Set the height */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin-top: 100px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>File Upload and Processing</h1> 
-    <form action="/process_video" method="post" enctype="multipart/form-data">
-        <label for="video_file">Choose a video file:</label><br>
-        <input type="file" name="video_file" id="video_file" accept="video/*" onchange="updateVideo(this)"><br><br>
-        
-        <label for="audio_file">Choose an audio file:</label><br>
-        <input type="file" name="audio_file" id="audio_file" accept="audio/*" onchange="updateAudio(this)"><br><br>
-        
-        <label for="target_language">Target Language:</label>
-        <select id="target_language" name="target_language">
-            {% for lang, code in languages.items() %}
-                <option value="{{ code }}">{{ lang }}</option>
-            {% endfor %}
-        </select><br><br>
-        <button type="submit">Process Files</button>
-        <h2>Uploaded Video</h2>
-        <video id="uploaded_video" controls>
-        Your browser does not support the video tag.
-        </video>
-
-
-        <h2>Uploaded Audio</h2>
-        <audio id="uploaded_audio" controls style="display: none;">
-        Your browser does not support the audio tag.
-        </audio>
-        </form>
-        {% if audio_file_path %}
-        <h2>Generated Audio</h2>
-        <audio controls>
-        <source src="{{ audio_file_path }}" type="audio/wav">
-        Your browser does not support the audio element.
-        </audio>
-        <br>
-        <a href="{{ audio_file_path }}" download>Download Audio</a>
-        {% endif %}
-    
-    <h2>Text to Speech</h2>
-    <form action="/generate_speech" method="post" enctype="multipart/form-data">
-        <textarea name="text_input" rows="4" cols="50" placeholder="Enter text..."></textarea><br><br>
-        <input type="hidden" name="output_file_path" value="E:\Integration_2024\output\audio\tested\cloning_from_text.wav">
-        
-        <label for="audio_file">Choose an audio file:</label><br>
-        <input type="file" name="audio_file" id="audio_file" accept="audio/*" onchange="updateAudio(this)"><br><br>
-
-        
-        <label for="target_language_tts">Target Language:</label>
-        <select id="target_language_tts" name="target_language">
-            {% for lang, code in languages.items() %}
-                <option value="{{ code }}">{{ lang }}</option>
-            {% endfor %}
-        </select><br><br>
-        <button type="submit">Generate Speech</button>
-    </form>
-
-    <script>
-        function updateVideo(input) {
-            const video = document.getElementById('uploaded_video');
-            const file = input.files[0];
-            const objectURL = URL.createObjectURL(file);
-            video.src = objectURL;
-            video.style.display = 'block';
-        }
-
-        function updateAudio(input) {
-            const audio = document.getElementById('uploaded_audio');
-            const file = input.files[0];
-            const objectURL = URL.createObjectURL(file);
-            audio.src = objectURL;
-            audio.style.display = 'block';
-        }
-
-        function updateAudioTTS(input) {
-            const audio = document.getElementById('uploaded_audio');
-            const file = input.files[0];
-            const objectURL = URL.createObjectURL(file);
-            audio.src = objectURL;
-            audio.style.display = 'block';
-        }
-    </script>
+    <div class="container">
+        <h1>Welcome to the Think </h1>
+        <button onclick="window.location.href='/video'">Go to video Page </button>
+        <button onclick="window.location.href='/audio'">Go to audio Page </button>
+        <button onclick="window.location.href='/text'">Go to  text Page </button>
+    </div>
 </body>
 </html>

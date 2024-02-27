@@ -4,8 +4,16 @@ from faster_whisper import WhisperModel
 import re
 from deep_translator import GoogleTranslator
 from pydub import AudioSegment
+import time
+from TTS.api import TTS
+import torch
+from features.tts_chunks import split_text, check_lang
 
 # for laptop --> from multiprocessing import freeze_support  # Step 1: Import freeze_support()
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
+
 def convert_audio_to_wav(local_audio_path):
     # Ensure the output directory exists
     output_directory = r'E:\Integration_2024\uploads'
@@ -49,37 +57,83 @@ def translate_text(text, target_language="ar"):
     translated_text = " ".join(translated_chunks)
     return translated_text
 
+def generate_speech(input_lang, input_text, input_audio):
+    start_time = time.time()
+    
+    # Check language
+    lang = check_lang(input_lang)
+    
+    # Split text into chunks
+    chunks = split_text(input_text)
+    
+    # Initialize output audio segment
+    output_audio = AudioSegment.empty()
+    
+    # Generate speech for each text chunk
+    for chunk in chunks:
+        tts.tts_to_file(text=chunk,
+                        file_path="output_temp.wav",
+                        speaker_wav=input_audio,
+                        language=lang)
+        chunk_audio = AudioSegment.from_wav("output_temp.wav")
+        output_audio += chunk_audio
+        
+        # Delete the temporary file
+        os.remove("output_temp.wav")
+    
+    # Export the combined audio
+    output_file_path = "output_All_combined.wav"
+    output_audio.export(output_file_path, format="wav")
+    
+    # Calculate execution time
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print("Execution time:", execution_time)
+    
+    return output_file_path
+
+
+
 #------> TESTING <------
-# def test_audio_processing():
-#     # Step 0: Input audio file path
-#     audio_path = input("Enter the path of the audio file: ")
+def test_audio_processing():
+    # Step 0: Input audio file path
+    audio_path = input("Enter the path of the audio file: ")
 
-#     # Step 1: Convert audio to WAV
-#     wav_audio_path = convert_audio_to_wav(audio_path)
-#     if not wav_audio_path:
-#         print("Error occurred during audio conversion.")
-#         return
+    # Step 1: Convert audio to WAV
+    wav_audio_path = convert_audio_to_wav(audio_path)
+    if not wav_audio_path:
+        print("Error occurred during audio conversion.")
+        return
 
-#     # Step 2: Transcribe audio to text
-#     transcribed_text = transcribe_audio(wav_audio_path)
-#     if not transcribed_text:
-#         print("Error occurred during transcription.")
-#         return
-#     print("Transcribed text:", transcribed_text)
+    # Step 2: Transcribe audio to text
+    transcribed_text = transcribe_audio(wav_audio_path)
+    if not transcribed_text:
+        print("Error occurred during transcription.")
+        return
+    print("Transcribed text:", transcribed_text)
 
-#     # Step 3: Input target language
-#     target_language = input("Enter the target language (e.g., 'ar' for Arabic): ")
+    # Step 3: Input target language
+    target_language = input("Enter the target language (e.g., 'ar' for Arabic): ")
 
-#     # Step 4: Translate the transcribed text
-#     translated_text = translate_text(transcribed_text, target_language)
-#     if not translated_text:
-#         print("Error occurred during translation.")
-#         return
+    # Step 4: Translate the transcribed text
+    translated_text = translate_text(transcribed_text, target_language)
+    if not translated_text:
+        print("Error occurred during translation.")
+        return
 
-#     print("Translated text:", translated_text)
+    print("Translated text:", translated_text)
+
+    input_lang = input("Enter the target language (e.g., 'ar' for Arabic): ")
 
 
-# # Call the test function
-# if __name__ == "__main__":
-#     test_audio_processing()
+    # Step 5: Generate speech
+    output_audio_path = generate_speech(input_lang , translated_text, wav_audio_path)
+    if not output_audio_path:
+        print("Error occurred during speech generation.")
+        return
 
+    print("Speech generated successfully and saved to:", output_audio_path)
+
+# Call the test function
+if __name__ == "__main__":
+    test_audio_processing()
