@@ -1,6 +1,4 @@
 from faster_whisper import WhisperModel
-import os
-import re
 from deep_translator import GoogleTranslator
 
 def transcribe_audio(audio_path):
@@ -11,9 +9,9 @@ def transcribe_audio(audio_path):
         transcriptions += segment.text + " "
     return transcriptions.strip()
 
-def translate_text(transcription, target_language="ar"):
+def translate_text(text, target_language="ar"):
     max_chunk_length = 500
-    words = re.findall(r'\b\w+\b', transcription)
+    words = text.split()
 
     translated_chunks = []
     current_chunk = ""
@@ -33,4 +31,20 @@ def translate_text(transcription, target_language="ar"):
 
     translated_text = " ".join(translated_chunks)
     return translated_text
+def test_translate_text():
+    # Input text to translate
+    text_to_translate = input("Enter the text to translate: ")
 
+    # Input target language
+    target_language = input("Enter the target language (e.g., 'ar' for Arabic): ")
+
+    # Translate the text
+    translated_text = translate_text(text_to_translate, target_language)
+    if translated_text:
+        print("Translated text:", translated_text)
+    else:
+        print("Translation failed.")
+
+# Call the test function
+if __name__ == "__main__":
+    test_translate_text()
