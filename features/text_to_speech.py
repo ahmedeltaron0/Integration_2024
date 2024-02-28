@@ -42,7 +42,7 @@ def test_translation():
         print("Translated text:", translated_text)
     else:
         print("Error occurred during translation.")
-
+    
 
 # Call the test function
 if __name__ == "__main__":
